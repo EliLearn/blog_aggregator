@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-chi/chi"
 	"github.com/joho/godotenv"
 )
 
@@ -13,12 +14,11 @@ func main() {
 
 	godotenv.Load()
 
+	r := chi.NewRouter()
+
 	portString := os.Getenv("PORT")
 	if portString == "" {
 		log.Fatal("PORT is not found in the environment")
 	}
-
-
-
-	fmt.Println("Port:", portString) // print the current port
+	fmt.Println("Port:", portString)
 }
