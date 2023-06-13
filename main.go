@@ -25,6 +25,22 @@ func main() {
 
 	router := chi.NewRouter()
 
+	// allow browsers to send information the server, this will help resolve errors during testing with a browser
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
+	
+	v1Router := chi.NewRouter()
+	v1Router.Get("/healthz", handlerReadiness) // handler will only fire on 'Get' request, otherwise return a 405
+	v1Router.Get("/err", handlerErr)
+
+	router.Mount("/v1", v1Router)
+
 	srv := &http.Server{
 		Handler: router,
 		Addr: ":" + portString,
@@ -35,9 +51,8 @@ func main() {
 	err := srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	router.Use(cors.Handler(cors.Options{}))
+		
 	
+	}
 	
 }
